@@ -67,6 +67,13 @@ const standardizeSubject = (input: string): string => {
     return input.charAt(0).toUpperCase() + input.slice(1);
 }
 
+// Helper: Extract Form (Tingkatan) from Class Name
+// e.g., "1 Anggerik" -> "1", "4 Sains" -> "4", "Peralihan" -> "Peralihan"
+export const getFormFromClass = (className: string): string => {
+  const match = className.match(/^\d+/);
+  return match ? match[0] : 'Lain-lain';
+};
+
 // AGGRESSIVE NORMALIZATION
 export const normalizeString = (str: string): string => {
     if (!str) return "";

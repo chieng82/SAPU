@@ -22,6 +22,7 @@ export interface FilterState {
   subject: string;
   severity: 'all' | 'warning' | 'critical';
   minGap: number;
+  tpRange?: [number, number]; // New: [Min, Max] e.g., [1, 2] for weak students
 }
 
 export const SUBJECTS = ['Bahasa Melayu', 'Bahasa Inggeris', 'Bahasa Cina'];
