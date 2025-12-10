@@ -1,0 +1,5 @@
+{
+  "name": "Sistem Analisis PBD & UASA",
+  "description": "A comprehensive data analysis tool for teachers to import, analyze, and track student performance gaps between PBD levels and UASA grades.",
+  "requestFramePermissions": []
+}
