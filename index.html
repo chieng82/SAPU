@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sistem Analisis PBD & UASA</title>
+    <!-- We keep Tailwind CDN for simplicity, though best practice is usually to install it via npm -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -31,16 +32,19 @@
 {
   "imports": {
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0",
-    "recharts": "https://aistudiocdn.com/recharts@^3.5.1",
+    "firebase/": "https://aistudiocdn.com/firebase@^12.6.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.1/",
     "react": "https://aistudiocdn.com/react@^19.2.1",
-    "firebase/": "https://aistudiocdn.com/firebase@^12.6.0/"
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.557.0",
+    "recharts": "https://aistudiocdn.com/recharts@^3.5.1",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.2",
+    "vite": "https://aistudiocdn.com/vite@^7.2.7"
   }
 }
 </script>
 </head>
   <body class="antialiased text-slate-800">
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
