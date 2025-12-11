@@ -79,16 +79,16 @@ export const UASAAnalysisView: React.FC<Props> = ({ students }) => {
     <div className="space-y-6 animate-in fade-in duration-300">
       
       {/* Filters */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center">
-        <div className="flex items-center gap-2 text-slate-700 font-medium">
-          <Filter className="w-4 h-4" />
+      <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center">
+        <div className="flex items-center gap-2 text-slate-700 font-semibold text-base">
+          <Filter className="w-5 h-5" />
           Penapis:
         </div>
         
         <select 
           value={selectedForm} 
           onChange={(e) => setSelectedForm(e.target.value)}
-          className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50"
+          className="px-4 py-2.5 border border-slate-200 rounded-lg text-base bg-white hover:bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50"
         >
           <option value="all">Semua Tingkatan</option>
           {uniqueForms.map(f => <option key={f} value={f}>Tingkatan {f}</option>)}
@@ -97,46 +97,46 @@ export const UASAAnalysisView: React.FC<Props> = ({ students }) => {
         <select 
           value={selectedSubject} 
           onChange={(e) => setSelectedSubject(e.target.value)}
-          className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50"
+          className="px-4 py-2.5 border border-slate-200 rounded-lg text-base bg-white hover:bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50"
         >
           <option value="all">Semua Subjek</option>
           {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
         
-        <div className="ml-auto text-sm text-slate-500">
+        <div className="ml-auto text-base text-slate-500 font-medium">
             {filteredData.length} Data Direkodkan
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
          {/* Stats Cards */}
-         <div className="lg:col-span-1 grid grid-cols-1 gap-4">
+         <div className="lg:col-span-1 grid grid-cols-1 gap-6">
              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-center text-center">
-                <div className="text-3xl font-bold text-slate-800">
+                <div className="text-5xl font-extrabold text-slate-800">
                     {(filteredData.length > 0 ? (lulusCount / filteredData.length * 100) : 0).toFixed(1)}%
                 </div>
-                <div className="text-xs font-semibold text-slate-500 uppercase mt-1">% Lulus (A-E)</div>
+                <div className="text-sm font-bold text-slate-500 uppercase mt-2">% Lulus (A-E)</div>
              </div>
              
              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-center text-center">
-                <div className="text-3xl font-bold text-blue-600">
+                <div className="text-5xl font-extrabold text-blue-600">
                    {filteredData.length > 0 
                      ? (classBreakdown.reduce((acc, curr) => acc + parseFloat(curr.gpmp), 0) / classBreakdown.length).toFixed(2) 
                      : '0.00'}
                 </div>
-                <div className="text-xs font-semibold text-slate-500 uppercase mt-1">GPMP Purata</div>
+                <div className="text-sm font-bold text-slate-500 uppercase mt-2">GPMP Purata</div>
              </div>
          </div>
 
          {/* Chart */}
          <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Taburan Gred UASA</h3>
-            <div className="h-64">
+            <h3 className="text-xl font-bold text-slate-800 mb-6">Taburan Gred UASA</h3>
+            <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={gradeDistribution}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="name" />
-                        <YAxis allowDecimals={false} />
+                        <XAxis dataKey="name" tick={{fontSize: 14, fontWeight: 600}} />
+                        <YAxis allowDecimals={false} tick={{fontSize: 14}} />
                         <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
                         <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                              {gradeDistribution.map((entry, index) => (
@@ -151,39 +151,39 @@ export const UASAAnalysisView: React.FC<Props> = ({ students }) => {
 
       {/* Detail Table */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-4 bg-slate-50 border-b border-slate-200">
-            <h3 className="font-bold text-slate-700">Analisis Gred Mengikut Kelas</h3>
+        <div className="p-5 bg-slate-50 border-b border-slate-200">
+            <h3 className="font-bold text-slate-800 text-lg">Analisis Gred Mengikut Kelas</h3>
         </div>
         <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-                <thead className="text-xs text-slate-500 uppercase bg-slate-50/50 border-b border-slate-100">
+            <table className="w-full text-base text-left">
+                <thead className="text-sm text-slate-600 uppercase bg-slate-100 border-b border-slate-200">
                     <tr>
-                        <th className="px-4 py-3 font-semibold">Kelas</th>
-                        <th className="px-4 py-3 text-center font-semibold">Bil Murid</th>
-                        <th className="px-4 py-3 text-center text-green-700 bg-green-50/30">A</th>
-                        <th className="px-4 py-3 text-center text-green-600 bg-green-50/30">B</th>
-                        <th className="px-4 py-3 text-center text-blue-600 bg-blue-50/30">C</th>
-                        <th className="px-4 py-3 text-center text-yellow-600 bg-yellow-50/30">D</th>
-                        <th className="px-4 py-3 text-center text-orange-600 bg-orange-50/30">E</th>
-                        <th className="px-4 py-3 text-center text-red-600 bg-red-50/30">F</th>
-                        <th className="px-4 py-3 text-center font-bold">GPMP</th>
+                        <th className="px-5 py-4 font-bold">Kelas</th>
+                        <th className="px-5 py-4 text-center font-bold">Bil Murid</th>
+                        <th className="px-5 py-4 text-center text-green-700 bg-green-50/50">A</th>
+                        <th className="px-5 py-4 text-center text-green-600 bg-green-50/50">B</th>
+                        <th className="px-5 py-4 text-center text-blue-600 bg-blue-50/50">C</th>
+                        <th className="px-5 py-4 text-center text-yellow-600 bg-yellow-50/50">D</th>
+                        <th className="px-5 py-4 text-center text-orange-600 bg-orange-50/50">E</th>
+                        <th className="px-5 py-4 text-center text-red-600 bg-red-50/50">F</th>
+                        <th className="px-5 py-4 text-center font-bold">GPMP</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                     {classBreakdown.length === 0 ? (
-                        <tr><td colSpan={9} className="text-center py-8 text-slate-400">Tiada Data</td></tr>
+                        <tr><td colSpan={9} className="text-center py-10 text-slate-400">Tiada Data</td></tr>
                     ) : (
                         classBreakdown.map((row) => (
                             <tr key={row.className} className="hover:bg-slate-50 transition">
-                                <td className="px-4 py-3 font-medium text-slate-800">{row.className}</td>
-                                <td className="px-4 py-3 text-center text-slate-600">{row.total}</td>
-                                <td className="px-4 py-3 text-center bg-green-50/30">{row.grades.A || '-'}</td>
-                                <td className="px-4 py-3 text-center bg-green-50/30">{row.grades.B || '-'}</td>
-                                <td className="px-4 py-3 text-center bg-blue-50/30">{row.grades.C || '-'}</td>
-                                <td className="px-4 py-3 text-center bg-yellow-50/30">{row.grades.D || '-'}</td>
-                                <td className="px-4 py-3 text-center bg-orange-50/30">{row.grades.E || '-'}</td>
-                                <td className="px-4 py-3 text-center bg-red-50/30">{row.grades.F || '-'}</td>
-                                <td className="px-4 py-3 text-center font-bold text-slate-700">{row.gpmp}</td>
+                                <td className="px-5 py-4 font-semibold text-slate-800">{row.className}</td>
+                                <td className="px-5 py-4 text-center text-slate-600 font-medium">{row.total}</td>
+                                <td className="px-5 py-4 text-center bg-green-50/30">{row.grades.A || '-'}</td>
+                                <td className="px-5 py-4 text-center bg-green-50/30">{row.grades.B || '-'}</td>
+                                <td className="px-5 py-4 text-center bg-blue-50/30">{row.grades.C || '-'}</td>
+                                <td className="px-5 py-4 text-center bg-yellow-50/30">{row.grades.D || '-'}</td>
+                                <td className="px-5 py-4 text-center bg-orange-50/30">{row.grades.E || '-'}</td>
+                                <td className="px-5 py-4 text-center bg-red-50/30">{row.grades.F || '-'}</td>
+                                <td className="px-5 py-4 text-center font-bold text-slate-800">{row.gpmp}</td>
                             </tr>
                         ))
                     )}

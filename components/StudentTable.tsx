@@ -67,7 +67,7 @@ export const StudentTable: React.FC<Props> = ({ data, onUpdate, onDelete }) => {
               const isEditing = editingId === item.student.id;
               
               return (
-                <tr key={item.student.id} className={`transition-colors ${getRowStyle(item.severity)}`}>
+                <tr key={item.student.id} className={`group transition-colors ${getRowStyle(item.severity)}`}>
                   {/* NAME */}
                   <td className="px-4 py-3">
                     {isEditing ? (

@@ -19,7 +19,9 @@ import {
   PieChart,
   LineChart,
   GitCompare, // Icon for Comparison
-  Menu // Icon for Mobile Menu
+  Menu, // Icon for Mobile Menu
+  Settings,
+  FileSpreadsheet
 } from 'lucide-react';
 import { Student, AnalysisResult, FilterState, SUBJECTS } from './types';
 import { parseCSV, calculateGap, exportToCSV, downloadTemplate, mergeStudents, normalizeString, findSimilarStudents, DuplicatePair } from './services/analysisUtils';
@@ -38,7 +40,7 @@ const App: React.FC = () => {
   
   // NAVIGATION STATE - Changed default to 'pbd'
   const [currentView, setCurrentView] = useState<'gap' | 'pbd' | 'uasa'>('pbd');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile Sidebar State
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar State (Global)
 
   // NEW: State for Duplicate Resolution Tool
   const [showDuplicateTool, setShowDuplicateTool] = useState(false);
@@ -233,13 +235,13 @@ const App: React.FC = () => {
   const handlePBDDrillDown = (minTP: number, maxTP: number) => {
       setFilters(prev => ({ ...prev, tpRange: [minTP, maxTP] }));
       setCurrentView('gap'); // Go to the Comparison List view
-      setIsSidebarOpen(false); // Auto close sidebar on mobile
+      setIsSidebarOpen(false); // Auto close sidebar
   };
 
   // Navigation Helper
   const navigateTo = (view: 'gap' | 'pbd' | 'uasa') => {
       setCurrentView(view);
-      setIsSidebarOpen(false); // Auto close sidebar on mobile
+      setIsSidebarOpen(false); // Auto close sidebar
       
       // Reset special filters if leaving comparison
       if (view !== 'gap') {
@@ -316,20 +318,20 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* MOBILE OVERLAY */}
+      {/* OVERLAY BACKDROP (VISIBLE ON ALL SCREENS WHEN SIDEBAR IS OPEN) */}
       {isSidebarOpen && (
         <div 
-            className="fixed inset-0 bg-black/20 z-20 lg:hidden backdrop-blur-sm"
+            className="fixed inset-0 bg-black/20 z-20 backdrop-blur-sm"
             onClick={() => setIsSidebarOpen(false)}
         ></div>
       )}
 
-      {/* SIDEBAR NAVIGATION */}
+      {/* SIDEBAR NAVIGATION (DRAWER STYLE) */}
       <aside className={`
-          fixed lg:static inset-y-0 left-0 z-30
-          w-64 bg-white border-r border-slate-200 flex flex-col shadow-xl lg:shadow-none
+          fixed inset-y-0 left-0 z-30
+          w-64 bg-white border-r border-slate-200 flex flex-col shadow-2xl
           transform transition-transform duration-300 ease-in-out
-          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="py-6 flex flex-col justify-center px-6 border-b border-slate-100 bg-white gap-2">
              <div className="flex items-center justify-between">
@@ -339,7 +341,7 @@ const App: React.FC = () => {
                     </div>
                     <span className="text-2xl font-black text-slate-800 tracking-tight">S.A.P.U.</span>
                  </div>
-                 <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-400">
+                 <button onClick={() => setIsSidebarOpen(false)} className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1 rounded-md transition">
                      <X className="w-5 h-5" />
                  </button>
              </div>
@@ -398,13 +400,13 @@ const App: React.FC = () => {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 overflow-y-auto relative bg-slate-50 w-full">
+      <main className="flex-1 overflow-y-auto relative bg-slate-50 w-full h-full">
         {/* HEADER */}
         <header className="bg-white border-b border-slate-200 sticky top-0 z-10 px-4 sm:px-8 h-16 flex items-center justify-between shadow-sm">
            <div className="flex items-center gap-3">
                <button 
                   onClick={() => setIsSidebarOpen(true)}
-                  className="lg:hidden p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-lg"
+                  className="p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-lg transition"
                >
                    <Menu className="w-6 h-6" />
                </button>
@@ -441,114 +443,161 @@ const App: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* CONTROL TOOLBAR */}
-                    <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col xl:flex-row justify-between items-center gap-3">
+                    {/* CONTROL TOOLBAR - PROFESSIONAL LAYOUT */}
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-6 overflow-visible">
                         
-                        {/* Left: Input & Filters */}
-                        <div className="flex flex-1 w-full xl:w-auto items-center gap-2 p-1 overflow-x-auto no-scrollbar">
-                            
-                            {/* TP Range Filter Active Indicator */}
-                            {filters.tpRange && (
-                                <div className="flex items-center gap-2 bg-red-50 text-red-700 px-3 py-2 rounded-lg text-sm border border-red-100 shrink-0">
-                                    <FileWarning className="w-4 h-4" />
-                                    <span className="font-bold">Belum Menguasai (TP 1-2)</span>
-                                    <button onClick={() => setFilters({...filters, tpRange: undefined})} className="hover:text-red-900 ml-1">
-                                        <X className="w-4 h-4" />
-                                    </button>
+                        {/* 1. TOP BAR: FILTERS */}
+                        <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col lg:flex-row gap-4 justify-between">
+                             {/* Search & Active Tags */}
+                             <div className="flex-1 flex flex-col md:flex-row gap-3">
+                                <div className="relative flex-1 max-w-md">
+                                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                                    <input 
+                                        type="text" 
+                                        placeholder="Cari murid..." 
+                                        value={filters.search}
+                                        onChange={(e) => setFilters({...filters, search: e.target.value})}
+                                        className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white transition"
+                                    />
                                 </div>
-                            )}
+                                {filters.tpRange && (
+                                    <div className="flex items-center gap-2 bg-red-50 text-red-700 px-3 py-2 rounded-lg text-sm border border-red-100 self-start">
+                                        <FileWarning className="w-4 h-4" />
+                                        <span className="font-bold">TP 1-2 Sahaja</span>
+                                        <button onClick={() => setFilters({...filters, tpRange: undefined})} className="hover:text-red-900 ml-1">
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
+                             </div>
 
-                            <div className="relative min-w-[180px]">
-                                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                                <input 
-                                    type="text" 
-                                    placeholder="Cari murid..." 
-                                    value={filters.search}
-                                    onChange={(e) => setFilters({...filters, search: e.target.value})}
-                                    className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-slate-50 focus:bg-white transition"
-                                />
-                            </div>
+                             {/* Dropdowns */}
+                             <div className="flex flex-wrap gap-2">
+                                <select 
+                                    value={filters.className}
+                                    onChange={(e) => setFilters({...filters, className: e.target.value})}
+                                    className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 outline-none cursor-pointer min-w-[140px]"
+                                >
+                                    <option value="">Semua Kelas</option>
+                                    {uniqueClasses.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
 
-                            <div className="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
+                                <select 
+                                    value={filters.subject}
+                                    onChange={(e) => setFilters({...filters, subject: e.target.value})}
+                                    className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 outline-none cursor-pointer min-w-[140px]"
+                                >
+                                    <option value="all">Semua Subjek</option>
+                                    {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
 
-                            <select 
-                                value={filters.className}
-                                onChange={(e) => setFilters({...filters, className: e.target.value})}
-                                className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 focus:ring-2 focus:ring-blue-500/50 outline-none cursor-pointer"
-                            >
-                                <option value="">Semua Kelas</option>
-                                {uniqueClasses.map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
-
-                            <select 
-                                value={filters.subject}
-                                onChange={(e) => setFilters({...filters, subject: e.target.value})}
-                                className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 focus:ring-2 focus:ring-blue-500/50 outline-none cursor-pointer"
-                            >
-                                <option value="all">Semua Subjek</option>
-                                {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
-                            </select>
+                                <select 
+                                    value={filters.severity}
+                                    onChange={(e) => setFilters({...filters, severity: e.target.value as any})}
+                                    className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 outline-none cursor-pointer min-w-[140px]"
+                                >
+                                    <option value="all">Status Jurang</option>
+                                    <option value="critical">Kritikal (≥ 2)</option>
+                                    <option value="warning">Amaran (1)</option>
+                                </select>
+                             </div>
                         </div>
 
-                        {/* Right: Actions */}
-                        <div className="flex items-center gap-2 w-full xl:w-auto justify-end p-1">
-                            <div className="flex items-center bg-slate-50 p-1 rounded-lg border border-slate-200">
-                                <label className="p-2 hover:bg-white hover:shadow-sm rounded-md cursor-pointer text-slate-600 transition" title="Import CSV">
-                                    <Upload className="w-4 h-4" />
-                                    <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
-                                </label>
-                                <button 
-                                    onClick={(e) => { e.stopPropagation(); setTemplateMenuOpen(!templateMenuOpen); }}
-                                    className="p-2 hover:bg-white hover:shadow-sm rounded-md text-slate-600 transition relative"
-                                    title="Templat"
+                        {/* 2. BOTTOM BAR: ACTIONS */}
+                        <div className="p-3 flex flex-col md:flex-row gap-4 justify-between items-center">
+                            
+                            {/* Analysis Tools */}
+                            <div className="flex gap-2 w-full md:w-auto">
+                                <button
+                                    onClick={openDuplicateTool}
+                                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-purple-600 text-sm font-medium transition shadow-sm"
                                 >
-                                    <FileText className="w-4 h-4" />
-                                    {templateMenuOpen && (
-                                        <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-slate-100 z-20 py-1 text-left">
-                                            <button onClick={() => downloadTemplate('all')} className="block w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Templat Penuh</button>
-                                            <button onClick={() => downloadTemplate('uasa')} className="block w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Templat UASA</button>
-                                            <button onClick={() => downloadTemplate('pbd')} className="block w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Templat PBD</button>
-                                        </div>
-                                    )}
+                                    <Wand2 className="w-4 h-4" />
+                                    <span>Penyelarasan</span>
                                 </button>
-                                <button onClick={() => exportToCSV(filteredData)} className="p-2 hover:bg-white hover:shadow-sm rounded-md text-slate-600 transition" title="Eksport CSV">
-                                    <Download className="w-4 h-4" />
-                                </button>
-                                <button onClick={() => setShowReference(true)} className="p-2 hover:bg-white hover:shadow-sm rounded-md text-blue-600 transition" title="Rujukan">
-                                    <Info className="w-4 h-4" />
+                                <button
+                                    onClick={() => setShowIncompleteOnly(!showIncompleteOnly)}
+                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition shadow-sm ${
+                                        showIncompleteOnly 
+                                        ? 'bg-orange-50 text-orange-700 border-orange-200' 
+                                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-orange-600'
+                                    }`}
+                                >
+                                    <FileWarning className="w-4 h-4" />
+                                    <span>Semakan</span>
+                                    {incompleteCount > 0 && <span className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{incompleteCount}</span>}
                                 </button>
                             </div>
 
-                            <button
-                                onClick={openDuplicateTool}
-                                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-purple-600 text-sm font-medium transition shadow-sm"
-                            >
-                                <Wand2 className="w-4 h-4" />
-                                <span className="hidden sm:inline">Penyelarasan</span>
-                            </button>
-
-                            <button
-                                onClick={() => setShowIncompleteOnly(!showIncompleteOnly)}
-                                className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition shadow-sm ${
-                                    showIncompleteOnly 
-                                    ? 'bg-orange-50 text-orange-700 border-orange-200' 
-                                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-orange-600'
-                                }`}
-                            >
-                                <FileWarning className="w-4 h-4" />
-                                <span className="hidden sm:inline">Semakan</span>
-                                {incompleteCount > 0 && <span className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{incompleteCount}</span>}
-                            </button>
-
-                            {students.length > 0 && (
-                                <button 
-                                    onClick={() => setShowDeleteModal(true)}
-                                    className="p-2 bg-white border border-red-200 text-red-500 hover:bg-red-50 rounded-lg transition shadow-sm"
-                                    title="Padam Semua"
-                                >
-                                    <Trash2 className="w-4 h-4" />
+                            {/* File Operations & Info */}
+                            <div className="flex gap-2 w-full md:w-auto justify-end">
+                                <button onClick={() => setShowReference(true)} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 rounded-lg text-slate-600 transition text-sm font-medium" title="Rujukan">
+                                    <Info className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Info</span>
                                 </button>
-                            )}
+                                
+                                <div className="h-8 w-px bg-slate-200 mx-1 hidden sm:block"></div>
+
+                                <label className="flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg cursor-pointer transition text-sm font-medium border border-blue-100 shadow-sm">
+                                    <Upload className="w-4 h-4" />
+                                    <span>Import</span>
+                                    <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
+                                </label>
+
+                                <div className="relative">
+                                    <button 
+                                        type="button"
+                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTemplateMenuOpen(prev => !prev); }}
+                                        className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg transition text-sm font-medium shadow-sm"
+                                    >
+                                        <FileText className="w-4 h-4" />
+                                        <span className="hidden sm:inline">Templat</span>
+                                    </button>
+                                    {templateMenuOpen && (
+                                        <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 z-50 py-1 text-left">
+                                            <button 
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); downloadTemplate('all'); setTemplateMenuOpen(false); }} 
+                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                                            >
+                                                <FileSpreadsheet className="w-4 h-4 text-green-600" /> Templat Penuh
+                                            </button>
+                                            <button 
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); downloadTemplate('uasa'); setTemplateMenuOpen(false); }} 
+                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                                            >
+                                                <FileSpreadsheet className="w-4 h-4 text-blue-600" /> Templat UASA
+                                            </button>
+                                            <button 
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); downloadTemplate('pbd'); setTemplateMenuOpen(false); }} 
+                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                                            >
+                                                <FileSpreadsheet className="w-4 h-4 text-orange-600" /> Templat PBD
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <button 
+                                    onClick={() => exportToCSV(filteredData)} 
+                                    className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg transition text-sm font-medium shadow-sm"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Eksport</span>
+                                </button>
+                                
+                                {students.length > 0 && (
+                                    <button 
+                                        onClick={() => setShowDeleteModal(true)}
+                                        className="ml-2 p-2 bg-white border border-red-200 text-red-500 hover:bg-red-50 rounded-lg transition shadow-sm"
+                                        title="Padam Semua"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 

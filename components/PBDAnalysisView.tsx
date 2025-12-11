@@ -69,16 +69,16 @@ export const PBDAnalysisView: React.FC<Props> = ({ students, onDrillDown }) => {
     <div className="space-y-6 animate-in fade-in duration-300">
       
       {/* Filters */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center">
-        <div className="flex items-center gap-2 text-slate-700 font-medium">
-          <Filter className="w-4 h-4" />
+      <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center">
+        <div className="flex items-center gap-2 text-slate-700 font-semibold text-base">
+          <Filter className="w-5 h-5" />
           Penapis:
         </div>
         
         <select 
           value={selectedForm} 
           onChange={(e) => setSelectedForm(e.target.value)}
-          className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50"
+          className="px-4 py-2.5 border border-slate-200 rounded-lg text-base bg-white hover:bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50"
         >
           <option value="all">Semua Tingkatan</option>
           {uniqueForms.map(f => <option key={f} value={f}>Tingkatan {f}</option>)}
@@ -87,33 +87,33 @@ export const PBDAnalysisView: React.FC<Props> = ({ students, onDrillDown }) => {
         <select 
           value={selectedSubject} 
           onChange={(e) => setSelectedSubject(e.target.value)}
-          className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50"
+          className="px-4 py-2.5 border border-slate-200 rounded-lg text-base bg-white hover:bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50"
         >
           <option value="all">Semua Subjek</option>
           {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
 
-        <div className="ml-auto text-sm text-slate-500">
+        <div className="ml-auto text-base text-slate-500 font-medium">
             {filteredData.length} Data Direkodkan
         </div>
       </div>
 
       {/* Stats Summary - INTERACTIVE */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* MENGUASAI */}
              <div 
                 onClick={() => onDrillDown(3, 6)}
                 className="bg-green-50 p-6 rounded-xl border border-green-100 flex flex-col justify-center text-center cursor-pointer hover:bg-green-100 hover:shadow-md transition group relative overflow-hidden"
              >
-                <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition">
-                    <ChevronRight className="w-5 h-5 text-green-600" />
+                <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition">
+                    <ChevronRight className="w-6 h-6 text-green-600" />
                 </div>
-                <div className="text-4xl font-bold text-green-700">
+                <div className="text-5xl font-extrabold text-green-700">
                     {filteredData.filter(s => s.pbdTP >= 3).length}
                 </div>
-                <div className="text-xs font-bold text-green-600 uppercase mt-2 tracking-wide">Menguasai (TP3-TP6)</div>
-                <p className="text-[10px] text-green-600/70 mt-1">Klik untuk lihat senarai</p>
+                <div className="text-sm font-bold text-green-600 uppercase mt-3 tracking-wide">Menguasai (TP3-TP6)</div>
+                <p className="text-xs text-green-600/70 mt-1">Klik untuk lihat senarai</p>
              </div>
 
              {/* BELUM MENGUASAI */}
@@ -121,37 +121,37 @@ export const PBDAnalysisView: React.FC<Props> = ({ students, onDrillDown }) => {
                 onClick={() => onDrillDown(1, 2)}
                 className="bg-red-50 p-6 rounded-xl border border-red-100 flex flex-col justify-center text-center cursor-pointer hover:bg-red-100 hover:shadow-md transition group relative overflow-hidden"
              >
-                <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition">
-                    <ChevronRight className="w-5 h-5 text-red-600" />
+                <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition">
+                    <ChevronRight className="w-6 h-6 text-red-600" />
                 </div>
-                <div className="text-4xl font-bold text-red-600">
+                <div className="text-5xl font-extrabold text-red-600">
                     {filteredData.filter(s => s.pbdTP < 3).length}
                 </div>
-                <div className="text-xs font-bold text-red-500 uppercase mt-2 tracking-wide">Belum Menguasai (TP1-TP2)</div>
-                <p className="text-[10px] text-red-500/70 mt-1">Klik untuk lihat senarai</p>
+                <div className="text-sm font-bold text-red-500 uppercase mt-3 tracking-wide">Belum Menguasai (TP1-TP2)</div>
+                <p className="text-xs text-red-500/70 mt-1">Klik untuk lihat senarai</p>
              </div>
 
              {/* MTM */}
              <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 flex flex-col justify-center text-center">
-                <div className="text-4xl font-bold text-blue-600">
+                <div className="text-5xl font-extrabold text-blue-600">
                     {(filteredData.length > 0 ? (filteredData.filter(s => s.pbdTP >= 3).length / filteredData.length * 100) : 0).toFixed(1)}%
                 </div>
-                <div className="text-xs font-bold text-blue-500 uppercase mt-2 tracking-wide">% MTM</div>
+                <div className="text-sm font-bold text-blue-500 uppercase mt-3 tracking-wide">% MTM</div>
              </div>
         </div>
 
       {/* Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-center">
-             <h3 className="text-lg font-bold text-slate-800 mb-6">Taburan TP Keseluruhan</h3>
-             <div className="h-64">
+             <h3 className="text-xl font-bold text-slate-800 mb-6">Taburan TP Keseluruhan</h3>
+             <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={tpDistribution} layout="vertical">
                         <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                         <XAxis type="number" hide />
-                        <YAxis dataKey="name" type="category" width={40} tick={{fontSize: 12}} />
+                        <YAxis dataKey="name" type="category" width={50} tick={{fontSize: 14}} />
                         <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                        <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={24}>
+                        <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={28}>
                             {tpDistribution.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.fill} />
                             ))}
@@ -163,37 +163,37 @@ export const PBDAnalysisView: React.FC<Props> = ({ students, onDrillDown }) => {
 
         {/* Detail Table */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-            <div className="p-4 bg-slate-50 border-b border-slate-200">
-                <h3 className="font-bold text-slate-700">Analisis Mengikut Kelas</h3>
+            <div className="p-5 bg-slate-50 border-b border-slate-200">
+                <h3 className="font-bold text-slate-800 text-lg">Analisis Mengikut Kelas</h3>
             </div>
             <div className="overflow-x-auto flex-1">
-                <table className="w-full text-sm text-left">
-                    <thead className="text-xs text-slate-500 uppercase bg-slate-50/50 border-b border-slate-100">
+                <table className="w-full text-base text-left">
+                    <thead className="text-sm text-slate-600 uppercase bg-slate-100 border-b border-slate-200">
                         <tr>
-                            <th className="px-4 py-3 font-semibold">Kelas</th>
-                            <th className="px-4 py-3 text-center font-semibold">Bil Murid</th>
-                            <th className="px-4 py-3 text-center text-green-700 bg-green-50/30">TP 6</th>
-                            <th className="px-4 py-3 text-center text-green-600 bg-green-50/30">TP 5</th>
-                            <th className="px-4 py-3 text-center text-blue-600 bg-blue-50/30">TP 4</th>
-                            <th className="px-4 py-3 text-center text-blue-500 bg-blue-50/30">TP 3</th>
-                            <th className="px-4 py-3 text-center text-amber-600 bg-amber-50/30">TP 2</th>
-                            <th className="px-4 py-3 text-center text-red-600 bg-red-50/30">TP 1</th>
+                            <th className="px-5 py-4 font-bold">Kelas</th>
+                            <th className="px-5 py-4 text-center font-bold">Bil Murid</th>
+                            <th className="px-5 py-4 text-center text-green-700 bg-green-50/50">TP 6</th>
+                            <th className="px-5 py-4 text-center text-green-600 bg-green-50/50">TP 5</th>
+                            <th className="px-5 py-4 text-center text-blue-600 bg-blue-50/50">TP 4</th>
+                            <th className="px-5 py-4 text-center text-blue-500 bg-blue-50/50">TP 3</th>
+                            <th className="px-5 py-4 text-center text-amber-600 bg-amber-50/50">TP 2</th>
+                            <th className="px-5 py-4 text-center text-red-600 bg-red-50/50">TP 1</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {classBreakdown.length === 0 ? (
-                            <tr><td colSpan={8} className="text-center py-8 text-slate-400">Tiada Data</td></tr>
+                            <tr><td colSpan={8} className="text-center py-10 text-slate-400">Tiada Data</td></tr>
                         ) : (
                             classBreakdown.map((row) => (
                                 <tr key={row.className} className="hover:bg-slate-50 transition">
-                                    <td className="px-4 py-3 font-medium text-slate-800">{row.className}</td>
-                                    <td className="px-4 py-3 text-center text-slate-600">{row.total}</td>
-                                    <td className="px-4 py-3 text-center bg-green-50/30">{row.tp[6] || '-'}</td>
-                                    <td className="px-4 py-3 text-center bg-green-50/30">{row.tp[5] || '-'}</td>
-                                    <td className="px-4 py-3 text-center bg-blue-50/30">{row.tp[4] || '-'}</td>
-                                    <td className="px-4 py-3 text-center bg-blue-50/30">{row.tp[3] || '-'}</td>
-                                    <td className="px-4 py-3 text-center bg-amber-50/30">{row.tp[2] || '-'}</td>
-                                    <td className="px-4 py-3 text-center bg-red-50/30">{row.tp[1] || '-'}</td>
+                                    <td className="px-5 py-4 font-semibold text-slate-800">{row.className}</td>
+                                    <td className="px-5 py-4 text-center text-slate-600 font-medium">{row.total}</td>
+                                    <td className="px-5 py-4 text-center bg-green-50/30">{row.tp[6] || '-'}</td>
+                                    <td className="px-5 py-4 text-center bg-green-50/30">{row.tp[5] || '-'}</td>
+                                    <td className="px-5 py-4 text-center bg-blue-50/30">{row.tp[4] || '-'}</td>
+                                    <td className="px-5 py-4 text-center bg-blue-50/30">{row.tp[3] || '-'}</td>
+                                    <td className="px-5 py-4 text-center bg-amber-50/30">{row.tp[2] || '-'}</td>
+                                    <td className="px-5 py-4 text-center bg-red-50/30">{row.tp[1] || '-'}</td>
                                 </tr>
                             ))
                         )}
