@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Upload, 
@@ -297,6 +298,7 @@ const App: React.FC = () => {
     const data = filteredData; 
     return {
         total: data.length,
+        extreme: data.filter(s => s.severity === 'extreme').length,
         critical: data.filter(s => s.severity === 'critical').length,
         warning: data.filter(s => s.severity === 'warning').length,
         averageTP: data.length > 0 ? (data.reduce((acc, curr) => acc + (curr.student.pbdTP || 0), 0) / data.length).toFixed(1) : 0
@@ -424,18 +426,22 @@ const App: React.FC = () => {
                 <div className="animate-in fade-in duration-300">
                     
                     {/* STATS */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
                             <p className="text-3xl font-bold text-slate-800">{stats.total}</p>
-                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mt-1">Data Dipaparkan</p>
+                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mt-1">Jumlah</p>
                         </div>
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
+                        <div className="bg-purple-50 p-4 rounded-xl shadow-sm border border-purple-100 flex flex-col items-center justify-center text-center">
+                            <p className="text-3xl font-bold text-purple-600">{stats.extreme}</p>
+                            <p className="text-xs font-semibold text-purple-600/70 uppercase tracking-wide mt-1">Sangat Kritikal</p>
+                        </div>
+                        <div className="bg-red-50 p-4 rounded-xl shadow-sm border border-red-100 flex flex-col items-center justify-center text-center">
                             <p className="text-3xl font-bold text-red-600">{stats.critical}</p>
-                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mt-1">Jurang Kritikal</p>
+                            <p className="text-xs font-semibold text-red-600/70 uppercase tracking-wide mt-1">Kritikal</p>
                         </div>
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
-                            <p className="text-3xl font-bold text-amber-500">{stats.warning}</p>
-                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mt-1">Amaran</p>
+                        <div className="bg-amber-50 p-4 rounded-xl shadow-sm border border-amber-100 flex flex-col items-center justify-center text-center">
+                            <p className="text-3xl font-bold text-amber-600">{stats.warning}</p>
+                            <p className="text-xs font-semibold text-amber-600/70 uppercase tracking-wide mt-1">Amaran</p>
                         </div>
                         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
                             <p className="text-3xl font-bold text-blue-600">{stats.averageTP}</p>
@@ -497,7 +503,8 @@ const App: React.FC = () => {
                                     className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 outline-none cursor-pointer min-w-[140px]"
                                 >
                                     <option value="all">Status Jurang</option>
-                                    <option value="critical">Kritikal (≥ 2)</option>
+                                    <option value="extreme">Sangat Kritikal (≥ 3)</option>
+                                    <option value="critical">Kritikal (2)</option>
                                     <option value="warning">Amaran (1)</option>
                                 </select>
                              </div>
@@ -627,7 +634,7 @@ const App: React.FC = () => {
                     
                     <div className="mt-4 flex justify-between items-center text-xs text-slate-400 font-medium">
                         <span>{filteredData.length} rekod dipaparkan</span>
-                        <span>Sistem v1.3</span>
+                        <span>Sistem v1.4</span>
                     </div>
                 </div>
             )}

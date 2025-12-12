@@ -1,3 +1,4 @@
+
 export interface Student {
   id: string;
   name: string;
@@ -13,14 +14,14 @@ export interface AnalysisResult {
   uasaNumeric: number;
   gap: number; // Absolute difference
   gapDirection: 'positive' | 'negative' | 'neutral'; // PBD > UASA, PBD < UASA, Equal
-  severity: 'none' | 'warning' | 'critical'; // none, warning (1 level), critical (2+ levels)
+  severity: 'none' | 'warning' | 'critical' | 'extreme'; // none, warning (1), critical (2), extreme (3+)
 }
 
 export interface FilterState {
   search: string;
   className: string;
   subject: string;
-  severity: 'all' | 'warning' | 'critical';
+  severity: 'all' | 'warning' | 'critical' | 'extreme';
   minGap: number;
   tpRange?: [number, number]; // New: [Min, Max] e.g., [1, 2] for weak students
 }

@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { AnalysisResult, Student, GRADE_MAP, SUBJECTS } from '../types';
-import { Edit2, Save, X, AlertTriangle, AlertOctagon, CheckCircle2, Trash2 } from 'lucide-react';
+import { Edit2, Save, X, AlertTriangle, AlertOctagon, CheckCircle2, Trash2, Zap } from 'lucide-react';
 
 interface Props {
   data: AnalysisResult[];
@@ -35,6 +36,7 @@ export const StudentTable: React.FC<Props> = ({ data, onUpdate, onDelete }) => {
 
   const getRowStyle = (severity: string) => {
     switch (severity) {
+      case 'extreme': return 'bg-purple-50/50 hover:bg-purple-50 border-l-4 border-l-purple-500';
       case 'critical': return 'bg-red-50/50 hover:bg-red-50 border-l-4 border-l-red-500';
       case 'warning': return 'bg-amber-50/50 hover:bg-amber-50 border-l-4 border-l-amber-500';
       default: return 'bg-white hover:bg-slate-50 border-l-4 border-l-transparent';
@@ -176,9 +178,12 @@ export const StudentTable: React.FC<Props> = ({ data, onUpdate, onDelete }) => {
                   <td className="px-4 py-3 text-center">
                     {item.gap > 0 ? (
                         <div className={`flex items-center justify-center gap-1.5 font-semibold text-sm ${
+                            item.severity === 'extreme' ? 'text-purple-600' :
                             item.severity === 'critical' ? 'text-red-600' : 'text-amber-600'
                         }`}>
-                            {item.severity === 'critical' ? <AlertOctagon className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
+                            {item.severity === 'extreme' ? <Zap className="w-4 h-4 fill-purple-600" /> :
+                             item.severity === 'critical' ? <AlertOctagon className="w-4 h-4" /> : 
+                             <AlertTriangle className="w-4 h-4" />}
                             <span>{item.gap} Tahap</span>
                         </div>
                     ) : (

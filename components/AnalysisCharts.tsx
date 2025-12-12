@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { AnalysisResult } from '../types';
@@ -9,16 +10,18 @@ interface Props {
 export const AnalysisCharts: React.FC<Props> = ({ data }) => {
   
   const gapDistribution = useMemo(() => {
-    const counts = { NoGap: 0, Warning: 0, Critical: 0 };
+    const counts = { NoGap: 0, Warning: 0, Critical: 0, Extreme: 0 };
     data.forEach(d => {
-      if (d.severity === 'critical') counts.Critical++;
+      if (d.severity === 'extreme') counts.Extreme++;
+      else if (d.severity === 'critical') counts.Critical++;
       else if (d.severity === 'warning') counts.Warning++;
       else counts.NoGap++;
     });
     return [
       { name: 'Tiada Jurang', value: counts.NoGap, color: '#4ade80' },
       { name: 'Amaran (1 Tahap)', value: counts.Warning, color: '#facc15' },
-      { name: 'Kritikal (2+ Tahap)', value: counts.Critical, color: '#f87171' },
+      { name: 'Kritikal (2 Tahap)', value: counts.Critical, color: '#f87171' },
+      { name: 'Sangat Kritikal (3+)', value: counts.Extreme, color: '#a855f7' }, // Purple
     ];
   }, [data]);
 

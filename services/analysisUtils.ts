@@ -1,3 +1,4 @@
+
 import { Student, AnalysisResult, GRADE_MAP } from '../types';
 
 export const calculateGap = (student: Student): AnalysisResult => {
@@ -16,8 +17,9 @@ export const calculateGap = (student: Student): AnalysisResult => {
 
   const gap = Math.abs(pbdTP - uasaNumeric);
   
-  let severity: 'none' | 'warning' | 'critical' = 'none';
-  if (gap >= 2) severity = 'critical';
+  let severity: 'none' | 'warning' | 'critical' | 'extreme' = 'none';
+  if (gap >= 3) severity = 'extreme';
+  else if (gap === 2) severity = 'critical';
   else if (gap === 1) severity = 'warning';
 
   let gapDirection: 'positive' | 'negative' | 'neutral' = 'neutral';
@@ -334,7 +336,7 @@ export const exportToCSV = (results: AnalysisResult[]): void => {
     r.student.uasaGrade,
     r.student.pbdTP || '',
     r.gap,
-    r.severity === 'critical' ? 'Kritikal' : r.severity === 'warning' ? 'Amaran' : 'Baik'
+    r.severity === 'extreme' ? 'Sangat Kritikal (3+)' : r.severity === 'critical' ? 'Kritikal (2)' : r.severity === 'warning' ? 'Amaran (1)' : 'Baik'
   ]);
 
   const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
