@@ -1,8 +1,9 @@
+
 import React, { useMemo, useState, useRef } from 'react';
 import { Student, SUBJECTS } from '../types';
 import { getFormFromClass } from '../services/analysisUtils';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { Filter, Search, ChevronDown, XCircle } from 'lucide-react';
+import { Filter, Search, ChevronDown, XCircle, Info, X } from 'lucide-react';
 
 interface Props {
   students: Student[];
@@ -11,6 +12,7 @@ interface Props {
 export const UASAAnalysisView: React.FC<Props> = ({ students }) => {
   const [selectedForm, setSelectedForm] = useState<string>('all');
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
+  const [showInfo, setShowInfo] = useState(false);
   
   // NEW: State for Detailed Table Filters
   const [studentSearch, setStudentSearch] = useState<string>('');
@@ -68,7 +70,7 @@ export const UASAAnalysisView: React.FC<Props> = ({ students }) => {
     }));
   }, [filteredData]);
 
-  // Class Breakdown Logic
+  // Class Breakdown Logic (Used for Table)
   const classBreakdown = useMemo(() => {
     const groups: Record<string, { grades: Record<string, number>, total: number }> = {};
     
@@ -89,9 +91,10 @@ export const UASAAnalysisView: React.FC<Props> = ({ students }) => {
                          (data.grades.D * 4) + (data.grades.E * 5) + (data.grades.F * 6);
           const gpmp = data.total > 0 ? (points / data.total).toFixed(2) : '0.00';
 
-          return { className, ...data, gpmp };
+          return { className, ...data, gpmp: parseFloat(gpmp) }; 
       })
-      .sort((a, b) => a.className.localeCompare(b.className));
+      // Sort naturally: 1 Amanah, 1 Bestari, 2 Amanah...
+      .sort((a, b) => a.className.localeCompare(b.className, undefined, { numeric: true, sensitivity: 'base' }));
   }, [filteredData]);
 
   const lulusCount = filteredData.filter(s => s.uasaGrade.toUpperCase() !== 'F').length;
@@ -109,8 +112,47 @@ export const UASAAnalysisView: React.FC<Props> = ({ students }) => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300 pb-12">
+    <div className="space-y-8 animate-in fade-in duration-300 pb-12 relative">
       
+      {/* GPMP INFO MODAL */}
+      {showInfo && (
+        <div className="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setShowInfo(false)}>
+            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
+                <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                    <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                        <Info className="w-5 h-5 text-blue-600" />
+                        Info GPMP
+                    </h3>
+                    <button onClick={() => setShowInfo(false)} className="text-slate-400 hover:text-slate-600">
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+                <div className="p-6">
+                    <div className="mb-4">
+                        <h4 className="text-sm font-bold text-slate-700 mb-2">Formula Pengiraan:</h4>
+                        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm font-mono text-slate-600">
+                            GPMP = <br/>(Σ Bil. Murid × Nilai Gred) / Jumlah Murid
+                        </div>
+                    </div>
+                    <div>
+                        <h4 className="text-sm font-bold text-slate-700 mb-2">Nilai Gred (KPM):</h4>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="flex justify-between p-2 bg-green-50 rounded border border-green-100"><span className="font-bold">A</span> <span>1.00</span></div>
+                            <div className="flex justify-between p-2 bg-emerald-50 rounded border border-emerald-100"><span className="font-bold">B</span> <span>2.00</span></div>
+                            <div className="flex justify-between p-2 bg-blue-50 rounded border border-blue-100"><span className="font-bold">C</span> <span>3.00</span></div>
+                            <div className="flex justify-between p-2 bg-yellow-50 rounded border border-yellow-100"><span className="font-bold">D</span> <span>4.00</span></div>
+                            <div className="flex justify-between p-2 bg-orange-50 rounded border border-orange-100"><span className="font-bold">E</span> <span>5.00</span></div>
+                            <div className="flex justify-between p-2 bg-red-50 rounded border border-red-100"><span className="font-bold">F</span> <span>6.00</span></div>
+                        </div>
+                    </div>
+                    <div className="mt-4 text-xs text-slate-400 text-center">
+                        * Nilai GPMP yang lebih kecil menunjukkan prestasi yang lebih baik.
+                    </div>
+                </div>
+            </div>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center">
         <div className="flex items-center gap-2 text-slate-700 font-semibold text-base">
@@ -135,8 +177,16 @@ export const UASAAnalysisView: React.FC<Props> = ({ students }) => {
           <option value="all">Semua Subjek</option>
           {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
+
+        <button 
+            onClick={() => setShowInfo(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition border border-blue-100 ml-auto md:ml-0"
+        >
+            <Info className="w-4 h-4" />
+            <span className="hidden sm:inline">Info GPMP</span>
+        </button>
         
-        <div className="ml-auto text-base text-slate-500 font-medium">
+        <div className="ml-auto text-base text-slate-500 font-medium hidden md:block">
             {filteredData.length} Data Direkodkan
         </div>
       </div>
@@ -172,7 +222,7 @@ export const UASAAnalysisView: React.FC<Props> = ({ students }) => {
           })}
       </div>
 
-      {/* Main Stats & Chart */}
+      {/* Main Stats & Bar Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
          {/* KPI Cards */}
          <div className="lg:col-span-1 grid grid-cols-1 gap-6">
@@ -188,7 +238,7 @@ export const UASAAnalysisView: React.FC<Props> = ({ students }) => {
                 <div className="absolute top-0 left-0 w-2 h-full bg-blue-600"></div>
                 <div className="text-6xl font-black text-blue-600 tracking-tighter">
                    {filteredData.length > 0 
-                     ? (classBreakdown.reduce((acc, curr) => acc + parseFloat(curr.gpmp), 0) / classBreakdown.length).toFixed(2) 
+                     ? (classBreakdown.reduce((acc, curr) => acc + curr.gpmp, 0) / classBreakdown.length).toFixed(2) 
                      : '0.00'}
                 </div>
                 <div className="text-sm font-bold text-slate-500 uppercase mt-2 tracking-wide">GPMP Purata</div>
@@ -222,47 +272,47 @@ export const UASAAnalysisView: React.FC<Props> = ({ students }) => {
          </div>
       </div>
 
-      {/* Class Breakdown Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-5 bg-slate-50 border-b border-slate-200">
-            <h3 className="font-bold text-slate-800 text-lg">Analisis Gred Mengikut Kelas</h3>
-        </div>
-        <div className="overflow-x-auto">
-            <table className="w-full text-base text-left">
-                <thead className="text-sm text-slate-600 uppercase bg-slate-100 border-b border-slate-200">
-                    <tr>
-                        <th className="px-5 py-4 font-bold">Kelas</th>
-                        <th className="px-5 py-4 text-center font-bold">Bil Murid</th>
-                        <th className="px-5 py-4 text-center text-green-700 bg-green-50/50">A</th>
-                        <th className="px-5 py-4 text-center text-green-600 bg-green-50/50">B</th>
-                        <th className="px-5 py-4 text-center text-blue-600 bg-blue-50/50">C</th>
-                        <th className="px-5 py-4 text-center text-yellow-600 bg-yellow-50/50">D</th>
-                        <th className="px-5 py-4 text-center text-orange-600 bg-orange-50/50">E</th>
-                        <th className="px-5 py-4 text-center text-red-600 bg-red-50/50">F</th>
-                        <th className="px-5 py-4 text-center font-bold">GPMP</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                    {classBreakdown.length === 0 ? (
-                        <tr><td colSpan={9} className="text-center py-10 text-slate-400">Tiada Data</td></tr>
-                    ) : (
-                        classBreakdown.map((row) => (
-                            <tr key={row.className} className="hover:bg-slate-50 transition">
-                                <td className="px-5 py-4 font-semibold text-slate-800">{row.className}</td>
-                                <td className="px-5 py-4 text-center text-slate-600 font-medium">{row.total}</td>
-                                <td className="px-5 py-4 text-center bg-green-50/30">{row.grades.A || '-'}</td>
-                                <td className="px-5 py-4 text-center bg-green-50/30">{row.grades.B || '-'}</td>
-                                <td className="px-5 py-4 text-center bg-blue-50/30">{row.grades.C || '-'}</td>
-                                <td className="px-5 py-4 text-center bg-yellow-50/30">{row.grades.D || '-'}</td>
-                                <td className="px-5 py-4 text-center bg-orange-50/30">{row.grades.E || '-'}</td>
-                                <td className="px-5 py-4 text-center bg-red-50/30">{row.grades.F || '-'}</td>
-                                <td className="px-5 py-4 text-center font-bold text-slate-800">{row.gpmp}</td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
-        </div>
+      {/* Class Breakdown Table (Full Width) */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+          <div className="p-5 bg-slate-50 border-b border-slate-200">
+              <h3 className="font-bold text-slate-800 text-lg">Analisis Gred Mengikut Kelas</h3>
+          </div>
+          <div className="overflow-x-auto flex-1">
+              <table className="w-full text-base text-left">
+                  <thead className="text-sm text-slate-600 uppercase bg-slate-100 border-b border-slate-200">
+                      <tr>
+                          <th className="px-5 py-4 font-bold">Kelas</th>
+                          <th className="px-5 py-4 text-center font-bold">Bil Murid</th>
+                          <th className="px-5 py-4 text-center text-green-700 bg-green-50/50">A</th>
+                          <th className="px-5 py-4 text-center text-green-600 bg-green-50/50">B</th>
+                          <th className="px-5 py-4 text-center text-blue-600 bg-blue-50/50">C</th>
+                          <th className="px-5 py-4 text-center text-yellow-600 bg-yellow-50/50">D</th>
+                          <th className="px-5 py-4 text-center text-orange-600 bg-orange-50/50">E</th>
+                          <th className="px-5 py-4 text-center text-red-600 bg-red-50/50">F</th>
+                          <th className="px-5 py-4 text-center font-bold">GPMP</th>
+                      </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                      {classBreakdown.length === 0 ? (
+                          <tr><td colSpan={9} className="text-center py-10 text-slate-400">Tiada Data</td></tr>
+                      ) : (
+                          classBreakdown.map((row) => (
+                              <tr key={row.className} className="hover:bg-slate-50 transition">
+                                  <td className="px-5 py-4 font-semibold text-slate-800">{row.className}</td>
+                                  <td className="px-5 py-4 text-center text-slate-600 font-medium">{row.total}</td>
+                                  <td className="px-5 py-4 text-center bg-green-50/30">{row.grades.A || '-'}</td>
+                                  <td className="px-5 py-4 text-center bg-green-50/30">{row.grades.B || '-'}</td>
+                                  <td className="px-5 py-4 text-center bg-blue-50/30">{row.grades.C || '-'}</td>
+                                  <td className="px-5 py-4 text-center bg-yellow-50/30">{row.grades.D || '-'}</td>
+                                  <td className="px-5 py-4 text-center bg-orange-50/30">{row.grades.E || '-'}</td>
+                                  <td className="px-5 py-4 text-center bg-red-50/30">{row.grades.F || '-'}</td>
+                                  <td className="px-5 py-4 text-center font-bold text-slate-800">{row.gpmp.toFixed(2)}</td>
+                              </tr>
+                          ))
+                      )}
+                  </tbody>
+              </table>
+          </div>
       </div>
 
       {/* DETAILED STUDENT TABLE WITH FILTERS */}
